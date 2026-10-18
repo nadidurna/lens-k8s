@@ -26,9 +26,9 @@
       </div>
 
       <nav class="sidebar-nav">
-        <div class="nav-section-title">CLUSTER</div>
+        <div class="nav-section-title">CLUSTER NAVIGATION</div>
         <button class="nav-item active" data-view="workloads">
-          <span class="icon">📦</span> Workloads & Pods
+          <span class="icon">📦</span> Pods & Workloads
         </button>
         <button class="nav-item" data-view="nodes">
           <span class="icon">🖥️</span> Nodes & Infrastructure
@@ -61,7 +61,7 @@
       <header class="topbar">
         <div class="topbar-left">
           <h1 id="pageTitle">Pods & Workloads</h1>
-          <div class="namespace-filter">
+          <div class="namespace-filter" id="namespaceFilterContainer">
             <label for="namespaceSelect">Namespace:</label>
             <select id="namespaceSelect" class="styled-select-sm">
               <option value="all">All Namespaces</option>
@@ -72,15 +72,14 @@
         <div class="topbar-right">
           <div class="search-box">
             <span class="search-icon">🔍</span>
-            <input type="text" id="podSearchInput" placeholder="Filter by pod or node name..." />
+            <input type="text" id="resourceSearchInput" placeholder="Filter resources..." />
           </div>
           <button id="refreshBtn" class="action-btn" title="Refresh Resources">🔄 Refresh</button>
         </div>
       </header>
 
-      <!-- View: Workloads / Pods -->
+      <!-- View 1: Workloads / Pods -->
       <section id="workloadsView" class="view-panel active">
-        <!-- Metric Cards -->
         <div class="metrics-grid">
           <div class="metric-card">
             <div class="metric-label">Total Pods</div>
@@ -100,7 +99,6 @@
           </div>
         </div>
 
-        <!-- Pods Table Container -->
         <div class="table-container">
           <table class="data-table">
             <thead>
@@ -112,30 +110,94 @@
                 <th>Restarts</th>
                 <th>Age</th>
                 <th>Node</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="podsTableBody">
-              <tr>
-                <td colspan="7" class="loading-cell">Loading Kubernetes pods...</td>
-              </tr>
+              <tr><td colspan="8" class="loading-cell">Loading pods...</td></tr>
             </tbody>
           </table>
         </div>
       </section>
 
-      <!-- View: Settings & Kubeconfig -->
+      <!-- View 2: Nodes -->
+      <section id="nodesView" class="view-panel">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Node Name</th>
+                <th>Roles</th>
+                <th>Kubernetes Version</th>
+                <th>CPU Utilization</th>
+                <th>Memory Allocation</th>
+                <th>Age</th>
+              </tr>
+            </thead>
+            <tbody id="nodesTableBody">
+              <tr><td colspan="7" class="loading-cell">Loading nodes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View 3: Services & Network -->
+      <section id="networkView" class="view-panel">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Service Name</th>
+                <th>Namespace</th>
+                <th>Type</th>
+                <th>Cluster IP</th>
+                <th>Ports (Mapping)</th>
+                <th>Age</th>
+              </tr>
+            </thead>
+            <tbody id="servicesTableBody">
+              <tr><td colspan="6" class="loading-cell">Loading services...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View 4: Storage & PVCs -->
+      <section id="storageView" class="view-panel">
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>PersistentVolumeClaim</th>
+                <th>Namespace</th>
+                <th>Capacity</th>
+                <th>Storage Class</th>
+                <th>Volume ID</th>
+                <th>Age</th>
+              </tr>
+            </thead>
+            <tbody id="storageTableBody">
+              <tr><td colspan="7" class="loading-cell">Loading storage claims...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View 5: Settings -->
       <section id="settingsView" class="view-panel">
         <div class="settings-card">
-          <h2>Local Settings & Storage</h2>
+          <h2>Local Settings & Kubeconfig</h2>
           <p class="settings-desc">
-            This application stores all your contexts, favorites, and settings on your local machine only.
-            No data is ever sent to external cloud providers.
+            All configuration is stored locally in <code>~/.k8s-local-lens/settings.json</code>.
+            Zero telemetry, zero login, 100% offline-ready.
           </p>
 
           <div class="form-group">
-            <label>Kubeconfig Location</label>
+            <label>Kubeconfig File Path</label>
             <input type="text" id="customKubeconfigInput" placeholder="Default: ~/.kube/config" class="form-input" />
-            <small>Leave empty to auto-detect standard location or use $KUBECONFIG.</small>
+            <small>Leave empty to auto-detect from ~/.kube/config or $KUBECONFIG.</small>
           </div>
 
           <div class="form-group">
@@ -150,6 +212,26 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <!-- Live Pod Logs Modal -->
+  <div id="logModal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>📜 Pod Logs:</span>
+          <strong id="logModalPodName">pod-name</strong>
+          <span class="badge offline-badge" id="logModalNamespace">default</span>
+        </div>
+        <button id="closeLogModalBtn" class="action-btn">✕ Close</button>
+      </div>
+      <div class="modal-body">
+        <pre id="logContentContainer" class="terminal-view">Fetching logs...</pre>
+      </div>
+      <div class="modal-footer">
+        <span class="log-hint">💡 Tip: In real cluster mode, this streams from <code>kubectl logs &lt;pod&gt;</code> directly.</span>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

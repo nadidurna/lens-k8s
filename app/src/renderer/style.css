@@ -14,6 +14,7 @@
   --color-danger: #ef4444;
   --color-completed: #38bdf8;
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 * {
@@ -384,7 +385,7 @@ body {
   font-weight: 600;
 }
 
-.status-running {
+.status-running, .status-ready, .status-bound {
   background: rgba(16, 185, 129, 0.15);
   color: var(--color-success);
   border: 1px solid rgba(16, 185, 129, 0.3);
@@ -406,6 +407,95 @@ body {
   background: rgba(245, 158, 11, 0.15);
   color: var(--color-warning);
   border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.btn-sm-action {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--accent-k8s);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-sm-action:hover {
+  background-color: var(--accent-k8s);
+  color: #fff;
+}
+
+/* Modal Overlay & Terminal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-window {
+  width: 85%;
+  max-width: 900px;
+  height: 75vh;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+}
+
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.modal-body {
+  flex: 1;
+  background-color: #030712;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.terminal-view {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #38bdf8;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.modal-footer {
+  padding: 0.75rem 1.25rem;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-color);
+}
+
+.log-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 /* Settings Form */

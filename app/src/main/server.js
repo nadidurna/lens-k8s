@@ -69,6 +69,15 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
+      if (pathname === '/api/pod-logs' && req.method === 'GET') {
+        const pod = url.searchParams.get('pod') || '';
+        const ns = url.searchParams.get('namespace') || 'default';
+        const result = await kubeManager.getPodLogs(pod, ns);
+        res.writeHead(200);
+        res.end(JSON.stringify(result));
+        return;
+      }
+
       if (pathname === '/api/settings' && req.method === 'GET') {
         res.writeHead(200);
         res.end(JSON.stringify({ success: true, settings: settingsManager.getAll() }));
