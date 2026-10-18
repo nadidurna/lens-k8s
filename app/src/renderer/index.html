@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>K8s Local Lens - Zero-Login Kubernetes Manager</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-mark">⎈</div>
+        <div class="brand">
+          <h2>Local Lens</h2>
+          <span class="badge offline-badge">LOCAL-FIRST</span>
+        </div>
+      </div>
+
+      <div class="context-selector-box">
+        <label for="contextSelect">Active Context</label>
+        <select id="contextSelect" class="styled-select">
+          <option value="">Loading contexts...</option>
+        </select>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">CLUSTER</div>
+        <button class="nav-item active" data-view="workloads">
+          <span class="icon">📦</span> Workloads & Pods
+        </button>
+        <button class="nav-item" data-view="nodes">
+          <span class="icon">🖥️</span> Nodes & Infrastructure
+        </button>
+        <button class="nav-item" data-view="network">
+          <span class="icon">🌐</span> Network & Services
+        </button>
+        <button class="nav-item" data-view="storage">
+          <span class="icon">💾</span> Storage & PVCs
+        </button>
+
+        <div class="nav-section-title">LOCAL SETTINGS</div>
+        <button class="nav-item" data-view="settings">
+          <span class="icon">⚙️</span> Preferences & Kubeconfig
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="status-indicator">
+          <span class="dot live-dot"></span>
+          <span id="connectionStatus">Connected</span>
+        </div>
+        <div class="security-note">🔒 Zero Cloud Login / 100% Local</div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 id="pageTitle">Pods & Workloads</h1>
+          <div class="namespace-filter">
+            <label for="namespaceSelect">Namespace:</label>
+            <select id="namespaceSelect" class="styled-select-sm">
+              <option value="all">All Namespaces</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="podSearchInput" placeholder="Filter by pod or node name..." />
+          </div>
+          <button id="refreshBtn" class="action-btn" title="Refresh Resources">🔄 Refresh</button>
+        </div>
+      </header>
+
+      <!-- View: Workloads / Pods -->
+      <section id="workloadsView" class="view-panel active">
+        <!-- Metric Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Total Pods</div>
+            <div class="metric-value" id="totalPodsCount">0</div>
+          </div>
+          <div class="metric-card success-card">
+            <div class="metric-label">Running</div>
+            <div class="metric-value" id="runningPodsCount">0</div>
+          </div>
+          <div class="metric-card warning-card">
+            <div class="metric-label">Pending / Completed</div>
+            <div class="metric-value" id="pendingPodsCount">0</div>
+          </div>
+          <div class="metric-card danger-card">
+            <div class="metric-label">Failed / CrashLoop</div>
+            <div class="metric-value" id="failedPodsCount">0</div>
+          </div>
+        </div>
+
+        <!-- Pods Table Container -->
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Pod Name</th>
+                <th>Namespace</th>
+                <th>Ready</th>
+                <th>Restarts</th>
+                <th>Age</th>
+                <th>Node</th>
+              </tr>
+            </thead>
+            <tbody id="podsTableBody">
+              <tr>
+                <td colspan="7" class="loading-cell">Loading Kubernetes pods...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- View: Settings & Kubeconfig -->
+      <section id="settingsView" class="view-panel">
+        <div class="settings-card">
+          <h2>Local Settings & Storage</h2>
+          <p class="settings-desc">
+            This application stores all your contexts, favorites, and settings on your local machine only.
+            No data is ever sent to external cloud providers.
+          </p>
+
+          <div class="form-group">
+            <label>Kubeconfig Location</label>
+            <input type="text" id="customKubeconfigInput" placeholder="Default: ~/.kube/config" class="form-input" />
+            <small>Leave empty to auto-detect standard location or use $KUBECONFIG.</small>
+          </div>
+
+          <div class="form-group">
+            <label>Auto-Refresh Interval (Seconds)</label>
+            <input type="number" id="refreshIntervalInput" min="2" max="60" value="5" class="form-input" style="width: 120px;" />
+          </div>
+
+          <div class="form-actions">
+            <button id="saveSettingsBtn" class="primary-btn">Save Local Settings</button>
+            <span id="settingsSaveStatus" class="save-status"></span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
